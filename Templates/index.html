@@ -22,16 +22,14 @@
                         <div class="card card-container">
                             <div class="card-body">
                                 <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
-                                    <p class="text-justify mt-2" id="paragraph">
-                                    </p>
+                                <p class="text-justify mt-2 text-black text-lg" id="paragraph"></p>
                             </div>
                         </div>
                 
                         <div class="card card-container mt-3">
                             <div class="card-body">
                                 <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
-                                <p class="text-justify mt-2" id="result">
-                                </p>
+                                <p class="text-justify mt-2 text-black" id="result"></p>
                             </div>
                         </div>
                     </div>
@@ -70,82 +68,77 @@
         </div>
     </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        const resultElement = document.getElementById('result');
+        const results = {{ result | tojson }};
+        const paragraphText = {{ paragraph | tojson }};
+
         const paragraphElement = document.getElementById('paragraph');
+        paragraphElement.classList.add('text-black');
+        const resultElement = document.getElementById('result');
 
-        // Check if 'result' and 'paragraph' are defined and not null
-        if (typeof result !== 'undefined' && result !== null && typeof paragraph !== 'undefined' && paragraph !== null) {
-            const results = {{ result | tojson }};
-            const paragraphText = {{ paragraph | tojson }};
+        const words = paragraphText.split(/\s+/);
 
-            const words = paragraphText.split(/\s+/);
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i];
+            let correctWord = words[i];
+            let isCorrect = false;
+            let isPeriod = false;
 
-            for (let i = 0; i < words.length; i++) {
-                let word = words[i];
-                let correctWord = words[i];
-                let isCorrect = false;
-                let isPeriod = false;
-
-                if (word.charAt(word.length - 1) === '.') {
-                    word = word.slice(0, -1);
-                    isPeriod = true;
-                }
-
-                // Check if the word exists in 'results'
-                if (results && results[word]) {
-                    isCorrect = results[word].is_correct;
-
-                    if (isCorrect === false) {
-                        correctWord = results[word].suggestion;
-                    }
-                }
-
-                let paragraph = document.createElement('span');
-                let result = document.createElement('span');
-
-                // Handle different styling based on 'isCorrect'
-                if (isCorrect === true) {
-                    paragraph.classList.add('text-dark-blue');
-                    result.classList.add('text-dark-blue');
-                } else if (isCorrect === false) {
-                    paragraph.classList.add('text-red');
-                    paragraph.style.cursor = 'pointer';
-                    result.classList.add('text-green');
-                } else {
-                    paragraph.classList.add('text-white');
-                    result.classList.add('text-white');
-                }
-
-                if (isPeriod === true) {
-                    word += '.';
-                }
-
-                paragraph.textContent = word;
-                result.textContent = correctWord;
-
-                // Add click event listener only if 'isCorrect' is false
-                if (isCorrect === false) {
-                    paragraph.addEventListener('click', function () {
-                        displaySuggestion(results[word]);
-                    });
-                }
-
-                paragraphElement.appendChild(paragraph);
-                paragraphElement.appendChild(document.createTextNode(' '));
-                resultElement.appendChild(result);
-                resultElement.appendChild(document.createTextNode(' '));
+            if (word.charAt(word.length - 1) === '.') {
+                word = word.slice(0, -1);
+                isPeriod = true;
             }
+
+            if (results[word]) {
+                isCorrect = results[word].is_correct;
+            } else if (word === 'di' || word === 'Di') {
+                combinedPhrase = word + ' ' + words[i + 1];
+                if (results[combinedPhrase]) {
+                    isCorrect = results[combinedPhrase].is_correct;
+                    word = combinedPhrase;
+                    correctWord = combinedPhrase;
+                    i++;
+                } else {
+                    isCorrect = 'Not found';
+                }
+            } else {
+                isCorrect = 'Not found';
+            }
+
+            let paragraph = document.createElement('span');
+            let result = document.createElement('span');
+            
+            if (isCorrect === true) {
+                paragraph.classList.add('text-success');
+                paragraph.classList.add('fw-bold');
+                result.classList.add('text-success');
+                result.classList.add('fw-bold');
+            } else if (isCorrect === false) {
+                paragraph.classList.add('text-danger');
+                paragraph.classList.add('fw-bold');
+                result.classList.add('text-success');
+                result.classList.add('fw-bold');
+                
+                correctWord = results[word].suggestion;
+            }
+
+            if (isPeriod === true) {
+                word += '.';
+            }
+            paragraph.textContent = word;
+            result.textContent = correctWord
+            
+            paragraphElement.appendChild(paragraph);
+            paragraphElement.appendChild(document.createTextNode(' '));
+            resultElement.appendChild(result);
+            resultElement.appendChild(document.createTextNode(' '));
         }
     });
 
     function displaySuggestion(result) {
         const suggestionContent = document.getElementById('suggestionContent');
         suggestionContent.textContent = result.suggestion;
-        $('#suggestionModal').modal('show');
     }
 </script>
 
