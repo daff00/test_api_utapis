@@ -22,14 +22,14 @@
                         <div class="card card-container">
                             <div class="card-body">
                                 <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
-                                <p class="text-justify mt-2 text-black text-lg" id="paragraph_id"></p>
+                                <p class="text-justify mt-2 text-black text-lg" id="paragraph_di"></p>
                             </div>
                         </div>
                 
                         <div class="card card-container mt-3">
                             <div class="card-body">
                                 <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
-                                <p class="text-justify mt-2 text-black" id="result_id"></p>
+                                <p class="text-justify mt-2 text-black" id="result_di"></p>
                             </div>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                         <div class="card card-container">
                             <div class="card-body">
                                 <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
-                                    <p class="text-justify mt-2" id="paragraph">
+                                    <p class="text-justify mt-2" id="paragraph_terikat">
                                     </p>
                             </div>
                         </div>
@@ -51,7 +51,7 @@
                         <div class="card card-container mt-3">
                             <div class="card-body">
                                 <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
-                                <p class="text-justify mt-2" id="result">
+                                <p class="text-justify mt-2" id="result_terikat">
                                 </p>
                             </div>
                         </div>
@@ -73,9 +73,9 @@
         const results = {{ result | tojson }};
         const paragraphText = {{ paragraph | tojson }};
 
-        const paragraphElement = document.getElementById('paragraph_id');
+        const paragraphElement = document.getElementById('paragraph_di');
         paragraphElement.classList.add('text-black');
-        const resultElement = document.getElementById('result_id');
+        const resultElement = document.getElementById('result_di');
 
         const words = paragraphText.split(/\s+/);
 
