@@ -43,13 +43,15 @@
                     <div class="card card-container">
                         <div class="card-body">
                             <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
-                            <p class="text-justify mt-2" id="paragraph_terikat">{{ paragraph_terikat }}</p>
+                            <p class="text-justify mt-2" id="paragraph_terikat"></p>
                         </div>
                     </div>
                     <div class="card card-container mt-3">
                         <div class="card-body">
                             <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
-                            <p class="text-justify mt-2" id="result_terikat">{{ result_terikat }}</p>
+                            <p class="text-justify mt-2" id="result_terikat">
+
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -64,6 +66,7 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     $(document).ready(function () {
         const results = {{ result_di | tojson }};
@@ -130,6 +133,61 @@
             resultElement.appendChild(result);
             resultElement.appendChild(document.createTextNode(' '));
         }
+        const resultDataTerikat = {{ result_terikat | tojson }};
+        const paragraphTerikat = {{ paragraph_terikat | tojson }};
+
+        const paragraphElementTerikat = document.getElementById('paragraph_terikat');
+        paragraphElementTerikat.classList.add('text-black');
+        const resultElementTerikat = document.getElementById('result_terikat');
+
+        const wordsTerikat = paragraphTerikat.split(/\s+/);
+
+        for (let i = 0; i < wordsTerikat.length; i++) {
+            let word = wordsTerikat[i];
+            let correctWord = wordsTerikat[i];
+            let isCorrect = false;
+            let isPeriod = false;
+
+            if (word.charAt(word.length - 1) === '.') {
+                word = word.slice(0, -1);
+                isPeriod = true;
+            }
+
+            if (resultDataTerikat[word.toLowerCase()]) {
+                isCorrect = resultDataTerikat[word.toLowerCase()].is_correct;
+            } else {
+                isCorrect = 'Not found';
+            }
+
+            let paragraphTerikat = document.createElement('span');
+            let resultTerikat = document.createElement('span');
+
+            if (isCorrect === true) {
+                paragraphTerikat.classList.add('text-success');
+                paragraphTerikat.classList.add('fw-bold');
+                resultTerikat.classList.add('text-success');
+                resultTerikat.classList.add('fw-bold');
+            } else if (isCorrect === false) {
+                paragraphTerikat.classList.add('text-danger');
+                paragraphTerikat.classList.add('fw-bold');
+                resultTerikat.classList.add('text-success');
+                resultTerikat.classList.add('fw-bold');
+
+                correctWord = resultDataTerikat[word.toLowerCase()].suggestion;
+            }
+
+            if (isPeriod === true) {
+                word += '.';
+            }
+            
+            paragraphTerikat.textContent = word;
+            resultTerikat.textContent = correctWord;
+
+            paragraphElementTerikat.appendChild(paragraphTerikat);
+            paragraphElementTerikat.appendChild(document.createTextNode(' '));
+            resultElementTerikat.appendChild(resultTerikat);
+            resultElementTerikat.appendChild(document.createTextNode(' '));
+        }
     });
 
     function displaySuggestion(result) {
@@ -137,7 +195,6 @@
         suggestionContent.textContent = result.suggestion;
     }
 </script>
-
 <!-- Modal HTML -->
 <div class="modal fade" id="suggestionModal" tabindex="-1" role="dialog" aria-labelledby="suggestionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered custom-modal" role="document">
