@@ -35,25 +35,21 @@
                     </div>
                 </div>
             </section>
+            <!-- Kata Terikat Section -->
             <section class="border p-3 mb-4 rounded-4 border-success">
-                <h3 class="text-success fw-bold text-uppercase rounded-5" style="letter-spacing: 0.06rem;">Kata Majemuk</h3>
+                <h3 class="text-success fw-bold text-uppercase rounded-5" style="letter-spacing: 0.06rem;">Kata Terikat</h3>
                 <hr>
-                <div class="">
-                    <div class="container mt-5 mb-5 ">
-                        <div class="card card-container">
-                            <div class="card-body">
-                                <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
-                                    <p class="text-justify mt-2" id="paragraph_terikat">
-                                    </p>
-                            </div>
+                <div class="container mt-5 mb-5">
+                    <div class="card card-container">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
+                            <p class="text-justify mt-2" id="paragraph_terikat">{{ paragraph_terikat }}</p>
                         </div>
-                
-                        <div class="card card-container mt-3">
-                            <div class="card-body">
-                                <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
-                                <p class="text-justify mt-2" id="result_terikat">
-                                </p>
-                            </div>
+                    </div>
+                    <div class="card card-container mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
+                            <p class="text-justify mt-2" id="result_terikat">{{ result_terikat }}</p>
                         </div>
                     </div>
                 </div>
@@ -70,8 +66,8 @@
 </div>
 <script>
     $(document).ready(function () {
-        const results = {{ result | tojson }};
-        const paragraphText = {{ paragraph | tojson }};
+        const results = {{ result_di | tojson }};
+        const paragraphText = {{ paragraph_di | tojson }};
 
         const paragraphElement = document.getElementById('paragraph_di');
         paragraphElement.classList.add('text-black');
