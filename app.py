@@ -19,16 +19,13 @@ def detect_diword():
         # Ambil data paragraf
         paragraph = request.form.get('paragraph')
 
-        # Detect di
+        # Deteksi Kata DI
         detector = DiWordDetector()
         result_di = detector.detect_di_usage(paragraph)
 
-        # Detect terikat
-        # Baca file txt sebagai kata dasar
+        # Detect Kata Terikat        
         with open('Models/deteksi_terikat/kata-dasar.txt', 'r') as file:
-            word_list = [line.strip() for line in file.readlines()]
-        
-        # Preprocessing
+            word_list = [line.strip() for line in file.readlines()]        
         preprocess = preprocessing(paragraph)
 
         # RabinKarp untuk cari pattern data input
