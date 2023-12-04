@@ -57,10 +57,6 @@ def detect_diword():
         if deteksi_bigram_terikat:
             result_terikat_dict.update(validateDuaKata(deteksi_bigram_terikat, word_list, paragraph))
 
-        # Jika tidak ada kata terikat
-        if not result_terikat_dict:
-            result_terikat_dict = {'errormessage': "Tidak ada kata terikat yang ditemukan"}
-
         return render_template('index.html', result_di=result_di, paragraph_di=paragraph, 
                                result_terikat=result_terikat_dict, paragraph_terikat=paragraph)
 
