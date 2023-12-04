@@ -63,6 +63,7 @@
         const paragraphText = {{ paragraph | tojson }};
 
         const paragraphElement = document.getElementById('paragraph');
+        paragraphElement.classList.add('');
         const resultElement = document.getElementById('result');
 
         const words = paragraphText.split(/\s+/);
@@ -98,12 +99,14 @@
             let result = document.createElement('span');
             
             if (isCorrect === true) {
-                paragraph.classList.add('text-da');
-                result.classList.add('text-da');
+                paragraph.classList.add('text-black');
+                result.classList.add('text-black');
             } else if (isCorrect === false) {
-                paragraph.classList.add('text-red');
+                paragraph.classList.add('text-danger');
+                paragraph.classList.add('fw-bold');
                 paragraph.style.cursor = 'pointer';
-                result.classList.add('text-green');
+                result.classList.add('text-success');
+                result.classList.add('fw-bold');
                 
                 correctWord = results[word].suggestion;
             } else {
@@ -114,7 +117,6 @@
             if (isPeriod === true) {
                 word += '.';
             }
-            
             paragraph.textContent = word;
             result.textContent = correctWord
 
