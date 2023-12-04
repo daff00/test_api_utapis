@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, url_for
+from flask import Flask, render_template, request
 from Models.deteksi_di.DiWordDetector import DiWordDetector
 from Models.deteksi_terikat.kataTerikat import patterns, validateSatuKata, validateDuaKata
 from Models.deteksi_terikat.preprocessing import preprocessing
@@ -9,9 +9,12 @@ app = Flask(__name__, template_folder='Templates')
 
 @app.route('/')
 def index():
-    result = None
-    paragraph = None
-    return render_template('index.html', result=result, paragraph=paragraph)
+    result_di = None
+    paragraph_di = None
+    result_terikat = None 
+    paragraph_terikat = None
+    return render_template('index.html', result_di=result_di, paragraph_di=paragraph_di, 
+                           result_terikat=result_terikat, paragraph_terikat=paragraph_terikat)
 
 @app.route('/detect', methods=['POST'])
 def detect_diword():
@@ -51,17 +54,16 @@ def detect_diword():
 
         result_terikat_dict.update(validateSatuKata(unique_data, word_list))
 
-        if (deteksi_bigram_terikat != []):
+        if deteksi_bigram_terikat:
             result_terikat_dict.update(validateDuaKata(deteksi_bigram_terikat, word_list, paragraph))
 
         # Jika tidak ada kata terikat
-        if result_terikat_dict == {}:
-            result_terikat_dict = {'errormessage' : "Tidak ada kata terikat yang ditemukan"}
+        if not result_terikat_dict:
+            result_terikat_dict = {'errormessage': "Tidak ada kata terikat yang ditemukan"}
 
-        return render_template('index.html', result=result_di, paragraph=paragraph)
-    
+        return render_template('index.html', result_di=result_di, paragraph_di=paragraph, 
+                               result_terikat=result_terikat_dict, paragraph_terikat=paragraph)
 
-    
 @app.route('/about')
 def about():
     return render_template('about.html')
