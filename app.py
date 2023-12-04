@@ -61,7 +61,7 @@ def detect_diword():
         if result_terikat_dict == {}:
             result_terikat_dict = {'errormessage' : "Tidak ada kata terikat yang ditemukan"}
 
-        return render_template('index.html', result=[result_di, result_terikat_dict], paragraph=paragraph)
+        return render_template('index.html', result=result_di, paragraph=paragraph)
     
 
     
