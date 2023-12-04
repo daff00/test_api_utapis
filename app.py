@@ -5,11 +5,6 @@ app = Flask(__name__, template_folder='Pages')
 
 @app.route('/')
 def index():
-    # Redirect to the home page
-    return redirect(url_for('home'))
-
-@app.route('/home')
-def home():
     return render_template('index.html')
 
 @app.route('/detect', methods=['POST'])
