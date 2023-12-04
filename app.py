@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, url_for
 from Models.DiWordDetector import DiWordDetector
 
-app = Flask(__name__, template_folder='Pages')
+app = Flask(__name__, template_folder='Templates')
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    result = None
+    paragraph = None
+    return render_template('index.html', result=result, paragraph=paragraph)
 
 @app.route('/detect', methods=['POST'])
 def detect_diword():

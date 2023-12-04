@@ -1,0 +1,156 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+{% include 'navbar.html' %}
+<div class="container-fluid mt-1 p-5">
+    <h2 class="text-center mb-4">Check Paragraph</h2>
+    <form action="/detect" method="POST">
+        <div class="form-floating mb-3">
+            <textarea class="form-control" placeholder=" " name="paragraph" id="floatingTextarea"
+                style="height: 200px;"></textarea>
+            <label for="floatingTextarea">Input Paragraph</label>
+        </div>
+        <button type="submit" class="btn btn-primary ms-auto d-block">Check Paragraf</button>
+    </form>
+
+    <div class="mt-5">
+        <div class="flex-column">
+            <section class="border p-3 mb-4 rounded-4 border-success">
+                <h3 class="text-success fw-bold text-uppercase rounded-5" style="letter-spacing: 0.06rem;">Deteksi Kata Di</h3>
+                <hr>
+                <div class="">
+                    <div class="container mt-5 mb-5 ">
+                        <div class="card card-container">
+                            <div class="card-body">
+                                <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
+                                    <p class="text-justify mt-2" id="paragraph">
+                                    </p>
+                            </div>
+                        </div>
+                
+                        <div class="card card-container mt-3">
+                            <div class="card-body">
+                                <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
+                                <p class="text-justify mt-2" id="result">
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="border p-3 mb-4 rounded-4 border-success">
+                <h3 class="text-success fw-bold text-uppercase rounded-5" style="letter-spacing: 0.06rem;">Kata Majemuk</h3>
+                <hr>
+                <div class="">
+                    <!-- Isi -->
+                </div>
+            </section>
+            <section class="border p-3 rounded-4 border-success">
+                <h3 class="text-success fw-bold text-uppercase rounded-5" style="letter-spacing: 0.06rem;">Kata Terikat</h3>
+                <hr>
+                <div class="">
+                    <!-- Isi -->
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const resultElement = document.getElementById('result');
+        const paragraphElement = document.getElementById('paragraph');
+
+        // Check if 'result' and 'paragraph' are defined and not null
+        if (typeof result !== 'undefined' && result !== null && typeof paragraph !== 'undefined' && paragraph !== null) {
+            const results = {{ result | tojson }};
+            const paragraphText = {{ paragraph | tojson }};
+
+            const words = paragraphText.split(/\s+/);
+
+            for (let i = 0; i < words.length; i++) {
+                let word = words[i];
+                let correctWord = words[i];
+                let isCorrect = false;
+                let isPeriod = false;
+
+                if (word.charAt(word.length - 1) === '.') {
+                    word = word.slice(0, -1);
+                    isPeriod = true;
+                }
+
+                // Check if the word exists in 'results'
+                if (results && results[word]) {
+                    isCorrect = results[word].is_correct;
+
+                    if (isCorrect === false) {
+                        correctWord = results[word].suggestion;
+                    }
+                }
+
+                let paragraph = document.createElement('span');
+                let result = document.createElement('span');
+
+                // Handle different styling based on 'isCorrect'
+                if (isCorrect === true) {
+                    paragraph.classList.add('text-dark-blue');
+                    result.classList.add('text-dark-blue');
+                } else if (isCorrect === false) {
+                    paragraph.classList.add('text-red');
+                    paragraph.style.cursor = 'pointer';
+                    result.classList.add('text-green');
+                } else {
+                    paragraph.classList.add('text-white');
+                    result.classList.add('text-white');
+                }
+
+                if (isPeriod === true) {
+                    word += '.';
+                }
+
+                paragraph.textContent = word;
+                result.textContent = correctWord;
+
+                // Add click event listener only if 'isCorrect' is false
+                if (isCorrect === false) {
+                    paragraph.addEventListener('click', function () {
+                        displaySuggestion(results[word]);
+                    });
+                }
+
+                paragraphElement.appendChild(paragraph);
+                paragraphElement.appendChild(document.createTextNode(' '));
+                resultElement.appendChild(result);
+                resultElement.appendChild(document.createTextNode(' '));
+            }
+        }
+    });
+
+    function displaySuggestion(result) {
+        const suggestionContent = document.getElementById('suggestionContent');
+        suggestionContent.textContent = result.suggestion;
+        $('#suggestionModal').modal('show');
+    }
+</script>
+
+<!-- Modal HTML -->
+<div class="modal fade" id="suggestionModal" tabindex="-1" role="dialog" aria-labelledby="suggestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered custom-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header custom-header">
+                <h5 class="modal-title" id="suggestionModalLabel">Suggestion</h5>
+                <button type="button" class="btn btn-transparant" data-dismiss="modal" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="suggestionContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'footer.html' %}
