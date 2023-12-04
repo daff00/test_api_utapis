@@ -55,10 +55,21 @@
                 </div>
             </section>
             <section class="border p-3 rounded-4 border-success">
-                <h3 class="text-success fw-bold text-uppercase rounded-5" style="letter-spacing: 0.06rem;">Kata Terikat</h3>
+                <h3 class="text-success fw-bold text-uppercase rounded-5" style="letter-spacing: 0.06rem;">Kata Majemuk</h3>
                 <hr>
-                <div class="">
-                    <!-- Isi -->
+                <div class="container mt-5 mb-5">
+                    <div class="card card-container">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
+                            <p class="text-justify mt-2" id="paragraph_majemuk">{{ paragraph_majemuk }}</p>
+                        </div>
+                    </div>
+                    <div class="card card-container mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
+                            <p class="text-justify mt-2">{{ result_majemuk[paragraph_majemuk]['suggestion'] if paragraph_majemuk is not none and paragraph_majemuk in result_majemuk else "" }}</p>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
@@ -66,14 +77,16 @@
 </div>
 <script>
     $(document).ready(function () {
-        const results = {{ result_di | tojson }};
-        const paragraphText = {{ paragraph_di | tojson }};
+        /* result kata di */
+        var results = {{ result_di | tojson }};
+        var paragraphText = {{ paragraph_di | tojson }};
 
-        const paragraphElement = document.getElementById('paragraph_di');
+        /* add kata di */
+        var paragraphElement = document.getElementById('paragraph_di');
         paragraphElement.classList.add('text-black');
-        const resultElement = document.getElementById('result_di');
+        var resultElement = document.getElementById('result_di');
 
-        const words = paragraphText.split(/\s+/);
+        var words = paragraphText.split(/\s+/);
 
         for (let i = 0; i < words.length; i++) {
             let word = words[i];
@@ -85,7 +98,6 @@
                 word = word.slice(0, -1);
                 isPeriod = true;
             }
-
             if (results[word]) {
                 isCorrect = results[word].is_correct;
             } else if (word === 'di' || word === 'Di') {
@@ -130,6 +142,73 @@
             resultElement.appendChild(result);
             resultElement.appendChild(document.createTextNode(' '));
         }
+        /* result kata di */
+        var results = {{ result_majemuk | tojson }};
+        var paragraphText = {{ paragraph_majemuk | tojson }};
+
+        /* add kata di */
+        var paragraphElement = document.getElementById('paragraph_majemuk');
+        paragraphElement.classList.add('text-black');
+        var resultElement = document.getElementById('result_majemuk');
+
+        var words = paragraphText.split(/\s+/);
+
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i];
+            let correctWord = words[i];
+            let isCorrect = false;
+            let isPeriod = false;
+
+            if (word.charAt(word.length - 1) === '.') {
+                word = word.slice(0, -1);
+                isPeriod = true;
+            }
+            if (results[word]) {
+                isCorrect = results[word].is_correct;
+            } else if (word === 'di' || word === 'Di') {
+                combinedPhrase = word + ' ' + words[i + 1];
+                if (results[combinedPhrase]) {
+                    isCorrect = results[combinedPhrase].is_correct;
+                    word = combinedPhrase;
+                    correctWord = combinedPhrase;
+                    i++;
+                } else {
+                    isCorrect = 'Not found';
+                }
+            } else {
+                isCorrect = 'Not found';
+            }
+
+            let paragraph = document.createElement('span');
+            let result = document.createElement('span');
+            
+            if (isCorrect === true) {
+                paragraph.classList.add('text-success');
+                paragraph.classList.add('fw-bold');
+                result.classList.add('text-success');
+                result.classList.add('fw-bold');
+            } else if (isCorrect === false) {
+                paragraph.classList.add('text-danger');
+                paragraph.classList.add('fw-bold');
+                result.classList.add('text-success');
+                result.classList.add('fw-bold');
+                
+                correctWord = results[word].suggestion;
+            }
+
+            if (isPeriod === true) {
+                word += '.';
+            }
+            paragraph.textContent = word;
+            result.textContent = correctWord
+            
+            paragraphElement.appendChild(paragraph);
+            paragraphElement.appendChild(document.createTextNode(' '));
+            resultElement.appendChild(result);
+            resultElement.appendChild(document.createTextNode(' '));
+        }
+
+        /* Terikat */
     });
 
     function displaySuggestion(result) {
