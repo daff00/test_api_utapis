@@ -22,16 +22,14 @@
                         <div class="card card-container">
                             <div class="card-body">
                                 <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
-                                    <p class="text-justify mt-2" id="paragraph">
-                                    </p>
+                                <p class="text-justify mt-2 text-black text-lg" id="paragraph"></p>
                             </div>
                         </div>
                 
                         <div class="card card-container mt-3">
                             <div class="card-body">
                                 <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
-                                <p class="text-justify mt-2" id="result">
-                                </p>
+                                <p class="text-justify mt-2 text-black" id="result"></p>
                             </div>
                         </div>
                     </div>
@@ -96,8 +94,10 @@
             let result = document.createElement('span');
             
             if (isCorrect === true) {
-                paragraph.classList.add('text-black');
-                result.classList.add('text-black');
+                paragraph.classList.add('text-success');
+                paragraph.classList.add('fw-bold');
+                result.classList.add('text-success');
+                result.classList.add('fw-bold');
             } else if (isCorrect === false) {
                 paragraph.classList.add('text-danger');
                 paragraph.classList.add('fw-bold');
@@ -106,9 +106,6 @@
                 result.classList.add('fw-bold');
                 
                 correctWord = results[word].suggestion;
-            } else {
-                paragraph.classList.add('text-white');
-                result.classList.add('text-white');
             }
 
             if (isPeriod === true) {
@@ -116,13 +113,6 @@
             }
             paragraph.textContent = word;
             result.textContent = correctWord
-
-            if (isCorrect === false) {
-                paragraph.addEventListener('click', function () {
-                    displaySuggestion(results[word]);
-                });
-            }
-            console.log('isCorrect:', isCorrect);
             
             paragraphElement.appendChild(paragraph);
             paragraphElement.appendChild(document.createTextNode(' '));
@@ -134,7 +124,6 @@
     function displaySuggestion(result) {
         const suggestionContent = document.getElementById('suggestionContent');
         suggestionContent.textContent = result.suggestion;
-        $('#suggestionModal').modal('show');
     }
 </script>
 
