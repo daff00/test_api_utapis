@@ -35,25 +35,54 @@
                     </div>
                 </div>
             </section>
+            <!-- Kata Terikat Section -->
             <section class="border p-3 mb-4 rounded-4 border-success">
-                <h3 class="text-success fw-bold text-uppercase rounded-5" style="letter-spacing: 0.06rem;">Kata Majemuk</h3>
+                <h3 class="text-success fw-bold text-uppercase rounded-5" style="letter-spacing: 0.06rem;">Kata Terikat</h3>
                 <hr>
-                <div class="">
-                    <div class="container mt-5 mb-5 ">
-                        <div class="card card-container">
-                            <div class="card-body">
-                                <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
-                                    <p class="text-justify mt-2" id="paragraph_terikat">
-                                    </p>
-                            </div>
+                <div class="container mt-5 mb-5">
+                    <div class="card card-container">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
+                            <p class="text-justify mt-2" id="paragraph_terikat">
+                                {% for word, info in result_terikat.items() %}
+                                    {% if word in paragraph_terikat %}
+                                        {% if info is not none %}
+                                            {% if info.is_correct == False %}
+                                                <span class="text-danger fw-bold">{{ word }}</span>
+                                            {% elif info.is_correct == True %}
+                                                <span class="text-success fw-bold">{{ word }}</span>
+                                            {% else %}
+                                                <span>{{ word }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span>{{ paragraph_terikat.item }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            
+                            </p>
                         </div>
-                
-                        <div class="card card-container mt-3">
-                            <div class="card-body">
-                                <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
-                                <p class="text-justify mt-2" id="result_terikat">
-                                </p>
-                            </div>
+                    </div>
+                    <div class="card card-container mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
+                            <p class="text-justify mt-2" id="result_terikat">
+                                {% for word, info in result_terikat.items() %}
+                                    {% if word in paragraph_terikat or word == 'errormessage' %}
+                                        {% if info.is_correct == False %}
+                                            <span class="text-success fw-bold">
+                                                {{ info.suggestion }}
+                                            </span>
+                                        {% else %}
+                                            {% if info.is_correct == True %}
+                                                <span class="text-success fw-bold">{{ word }}</span>
+                                            {% else %}
+                                                <span>{{ info }}</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -68,10 +97,11 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     $(document).ready(function () {
-        const results = {{ result | tojson }};
-        const paragraphText = {{ paragraph | tojson }};
+        const results = {{ result_di | tojson }};
+        const paragraphText = {{ paragraph_di | tojson }};
 
         const paragraphElement = document.getElementById('paragraph_di');
         paragraphElement.classList.add('text-black');
@@ -134,6 +164,7 @@
             resultElement.appendChild(result);
             resultElement.appendChild(document.createTextNode(' '));
         }
+        
     });
 
     function displaySuggestion(result) {
@@ -141,7 +172,6 @@
         suggestionContent.textContent = result.suggestion;
     }
 </script>
-
 <!-- Modal HTML -->
 <div class="modal fade" id="suggestionModal" tabindex="-1" role="dialog" aria-labelledby="suggestionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered custom-modal" role="document">
