@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, url_for
-from Models.DiWordDetector import DiWordDetector
+from Models.deteksi_di.DiWordDetector import DiWordDetector
 
 app = Flask(__name__, template_folder='Templates')
 
