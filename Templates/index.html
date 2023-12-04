@@ -54,16 +54,13 @@
         </div>
     </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
         const results = {{ result | tojson }};
         const paragraphText = {{ paragraph | tojson }};
 
         const paragraphElement = document.getElementById('paragraph');
-        paragraphElement.classList.add('');
+        paragraphElement.classList.add('text-black');
         const resultElement = document.getElementById('result');
 
         const words = paragraphText.split(/\s+/);
@@ -125,6 +122,7 @@
                     displaySuggestion(results[word]);
                 });
             }
+            console.log('isCorrect:', isCorrect);
             
             paragraphElement.appendChild(paragraph);
             paragraphElement.appendChild(document.createTextNode(' '));
