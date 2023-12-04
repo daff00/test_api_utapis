@@ -56,73 +56,78 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
-        const resultElement = document.getElementById('result');
+        const results = {{ result | tojson }};
+        const paragraphText = {{ paragraph | tojson }};
+
         const paragraphElement = document.getElementById('paragraph');
+        const resultElement = document.getElementById('result');
 
-        // Check if 'result' and 'paragraph' are defined and not null
-        if (typeof result !== 'undefined' && result !== null && typeof paragraph !== 'undefined' && paragraph !== null) {
-            const results = {{ result | tojson }};
-            const paragraphText = {{ paragraph | tojson }};
+        const words = paragraphText.split(/\s+/);
 
-            const words = paragraphText.split(/\s+/);
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i];
+            let correctWord = words[i];
+            let isCorrect = false;
+            let isPeriod = false;
 
-            for (let i = 0; i < words.length; i++) {
-                let word = words[i];
-                let correctWord = words[i];
-                let isCorrect = false;
-                let isPeriod = false;
-
-                if (word.charAt(word.length - 1) === '.') {
-                    word = word.slice(0, -1);
-                    isPeriod = true;
-                }
-
-                // Check if the word exists in 'results'
-                if (results && results[word]) {
-                    isCorrect = results[word].is_correct;
-
-                    if (isCorrect === false) {
-                        correctWord = results[word].suggestion;
-                    }
-                }
-
-                let paragraph = document.createElement('span');
-                let result = document.createElement('span');
-
-                // Handle different styling based on 'isCorrect'
-                if (isCorrect === true) {
-                    paragraph.classList.add('text-dark-blue');
-                    result.classList.add('text-dark-blue');
-                } else if (isCorrect === false) {
-                    paragraph.classList.add('text-red');
-                    paragraph.style.cursor = 'pointer';
-                    result.classList.add('text-green');
-                } else {
-                    paragraph.classList.add('text-white');
-                    result.classList.add('text-white');
-                }
-
-                if (isPeriod === true) {
-                    word += '.';
-                }
-
-                paragraph.textContent = word;
-                result.textContent = correctWord;
-
-                // Add click event listener only if 'isCorrect' is false
-                if (isCorrect === false) {
-                    paragraph.addEventListener('click', function () {
-                        displaySuggestion(results[word]);
-                    });
-                }
-
-                paragraphElement.appendChild(paragraph);
-                paragraphElement.appendChild(document.createTextNode(' '));
-                resultElement.appendChild(result);
-                resultElement.appendChild(document.createTextNode(' '));
+            if (word.charAt(word.length - 1) === '.') {
+                word = word.slice(0, -1);
+                isPeriod = true;
             }
+
+            if (results[word]) {
+                isCorrect = results[word].is_correct;
+            } else if (word === 'di' || word === 'Di') {
+                combinedPhrase = word + ' ' + words[i + 1];
+                if (results[combinedPhrase]) {
+                    isCorrect = results[combinedPhrase].is_correct;
+                    word = combinedPhrase;
+                    correctWord = combinedPhrase;
+                    i++;
+                } else {
+                    isCorrect = 'Not found';
+                }
+            } else {
+                isCorrect = 'Not found';
+            }
+
+            let paragraph = document.createElement('span');
+            let result = document.createElement('span');
+            
+            if (isCorrect === true) {
+                paragraph.classList.add('text-da');
+                result.classList.add('text-da');
+            } else if (isCorrect === false) {
+                paragraph.classList.add('text-red');
+                paragraph.style.cursor = 'pointer';
+                result.classList.add('text-green');
+                
+                correctWord = results[word].suggestion;
+            } else {
+                paragraph.classList.add('text-white');
+                result.classList.add('text-white');
+            }
+
+            if (isPeriod === true) {
+                word += '.';
+            }
+            
+            paragraph.textContent = word;
+            result.textContent = correctWord
+
+            if (isCorrect === false) {
+                paragraph.addEventListener('click', function () {
+                    displaySuggestion(results[word]);
+                });
+            }
+            
+            paragraphElement.appendChild(paragraph);
+            paragraphElement.appendChild(document.createTextNode(' '));
+            resultElement.appendChild(result);
+            resultElement.appendChild(document.createTextNode(' '));
         }
     });
 
