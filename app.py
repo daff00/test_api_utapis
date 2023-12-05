@@ -11,7 +11,7 @@ app = Flask(__name__, template_folder='Templates')
 def index():
     result_di = None
     paragraph_di = None
-    result_terikat = None 
+    result_terikat = {} 
     paragraph_terikat = None
     return render_template('index.html', result_di=result_di, paragraph_di=paragraph_di, 
                            result_terikat=result_terikat, paragraph_terikat=paragraph_terikat)
