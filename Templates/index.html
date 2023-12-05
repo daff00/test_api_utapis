@@ -176,27 +176,22 @@
             let createTerikatParagraph = document.createElement('span');
             let createResultTerikat = document.createElement('span');
 
-            if(isCorrect === false) {
-                console.log(`${word}`);
+            if (isCorrect === true) {
+                createTerikatParagraph.classList.add('text-success');
+                createTerikatParagraph.classList.add('fw-bold');
+                createResultTerikat.classList.add('text-success');
+                createResultTerikat.classList.add('fw-bold');
+            } else if (isCorrect === false) {
+                createTerikatParagraph.classList.add('text-danger');
+                createTerikatParagraph.classList.add('fw-bold');
+                createResultTerikat.classList.add('text-success');
+                createResultTerikat.classList.add('fw-bold');
+
+                // Check if the suggestion property exists before accessing it
+                if (results_terikat[word] && results_terikat[word].suggestion) {
+                    correctWord = results_terikat[word].suggestion;
+                }
             }
-
-            // // Check if the words contain the is_correct property set to false based on the json
-            // if (isCorrect === true) {
-            //     createTerikatParagraph.classList.add('text-success');
-            //     createTerikatParagraph.classList.add('fw-bold');
-            //     createResultTerikat.classList.add('text-success');
-            //     createResultTerikat.classList.add('fw-bold');
-            // } else if (isCorrect === false) {
-            //     createTerikatParagraph.classList.add('text-danger');
-            //     createTerikatParagraph.classList.add('fw-bold');
-            //     createResultTerikat.classList.add('text-danger');
-            //     createResultTerikat.classList.add('fw-bold');
-
-            //     // Check if the suggestion property exists before accessing it
-            //     if (results_terikat[word] && results_terikat[word].suggestion) {
-            //         correctWord = results_terikat[word].suggestion;
-            //     }
-            // }
 
             // Re-add period
             if (isPeriod === true) {
