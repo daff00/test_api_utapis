@@ -44,22 +44,7 @@
                         <div class="card-body">
                             <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
                             <p class="text-justify mt-2" id="paragraph_terikat">
-                                {% for word, info in result_terikat.items() %}
-                                    {% if word in paragraph_terikat %}
-                                        {% if info is not none %}
-                                            {% if info.is_correct == False %}
-                                                <span class="text-danger fw-bold">{{ word }}</span>
-                                            {% elif info.is_correct == True %}
-                                                <span class="text-success fw-bold">{{ word }}</span>
-                                            {% else %}
-                                                <span>{{ word }}</span>
-                                            {% endif %}
-                                        {% else %}
-                                            <span>{{ paragraph_terikat.item }}</span>
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            
+
                             </p>
                         </div>
                     </div>
@@ -67,21 +52,7 @@
                         <div class="card-body">
                             <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
                             <p class="text-justify mt-2" id="result_terikat">
-                                {% for word, info in result_terikat.items() %}
-                                    {% if word in paragraph_terikat or word == 'errormessage' %}
-                                        {% if info.is_correct == False %}
-                                            <span class="text-success fw-bold">
-                                                {{ info.suggestion }}
-                                            </span>
-                                        {% else %}
-                                            {% if info.is_correct == True %}
-                                                <span class="text-success fw-bold">{{ word }}</span>
-                                            {% else %}
-                                                <span>{{ info }}</span>
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
+
                             </p>
                         </div>
                     </div>
@@ -165,6 +136,77 @@
             resultElement.appendChild(document.createTextNode(' '));
         }
         
+        const results_terikat = {{ result_terikats | tojson }};
+        const paragraph_terikat = {{ paragraph_terikat | tojson }};
+
+        const paragraphElement_terikat = document.getElementById('paragraph_terikat');
+        paragraphElement_terikat.classList.add('text-black');
+        const resultElement_terikat = document.getElementById('result_terikat');
+
+        const words_terikat = paragraph_terikat.split(/\s+/);
+
+        for (let i = 0; i < words_terikat.length; i++) {
+            let word = words_terikat[i];
+            let correctWord = words_terikat[i];
+            let isCorrect = false;
+            let isPeriod = false;
+
+            if (word.charAt(word.length - 1) === '.') {
+                word = word.slice(0, -1);
+                isPeriod = true;
+            }
+
+            if (results_terikat[word]) {
+                isCorrect = results_terikat[word].is_correct;
+            } else if (i < words_terikat.length - 1) {
+                let combinedPhrase = word + ' ' + words_terikat[i + 1];
+                if (results_terikat[combinedPhrase]) {
+                    isCorrect = results_terikat[combinedPhrase].is_correct;
+                    word = combinedPhrase;
+                    correctWord = combinedPhrase;
+                    i++;
+                } else if (results_terikat[combinedPhrase] === false) {
+                    isCorrect = false;
+                } else {
+                isCorrect = "Not Found";
+                }
+            }
+
+            let createTerikatParagraph = document.createElement('span');
+            let createResultTerikat = document.createElement('span');
+
+            if (isCorrect === true) {
+                createTerikatParagraph.classList.add('text-success');
+                createTerikatParagraph.classList.add('fw-bold');
+                createResultTerikat.classList.add('text-success');
+                createResultTerikat.classList.add('fw-bold');
+            } else if (isCorrect === false) {
+                createTerikatParagraph.classList.add('text-danger');
+                createTerikatParagraph.classList.add('fw-bold');
+                createResultTerikat.classList.add('text-success');
+                createResultTerikat.classList.add('fw-bold');
+
+                // Check if the suggestion property exists before accessing it
+                if (results_terikat[word] && results_terikat[word].suggestion) {
+                    correctWord = results_terikat[word].suggestion;
+                }
+            }
+
+            // Re-add period
+            if (isPeriod === true) {
+                word += '.';
+            }
+            // Adding text
+            createTerikatParagraph.textContent = word;
+            createResultTerikat.textContent = correctWord;
+
+            // Append Child and giving space
+            paragraphElement_terikat.appendChild(createTerikatParagraph);
+            paragraphElement_terikat.appendChild(document.createTextNode(' '));
+            resultElement_terikat.appendChild(createResultTerikat);
+            resultElement_terikat.appendChild(document.createTextNode(' '));
+        }
+
     });
 
     function displaySuggestion(result) {
