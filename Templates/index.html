@@ -172,7 +172,6 @@
                 }
             }
 
-            // Appending class based on correct or not  
             let createTerikatParagraph = document.createElement('span');
             let createResultTerikat = document.createElement('span');
 
@@ -201,6 +200,7 @@
             createTerikatParagraph.textContent = word;
             createResultTerikat.textContent = correctWord;
 
+            // Append Child and giving space
             paragraphElement_terikat.appendChild(createTerikatParagraph);
             paragraphElement_terikat.appendChild(document.createTextNode(' '));
             resultElement_terikat.appendChild(createResultTerikat);
