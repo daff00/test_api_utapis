@@ -18,7 +18,7 @@ app = Flask(__name__, template_folder='Templates')
 def index():
     result_di = None
     paragraph_di = None
-    result_terikat = None 
+    result_terikat = {} 
     paragraph_terikat = None
     result_majemuk_final = []
     paragraph_majemuk = []
@@ -30,42 +30,7 @@ def detect_diword():
     if request.method == 'POST':
         # # Ambil data paragraf
         paragraph = request.form.get('paragraph')
-
-        # # Deteksi Kata DI #
-        detector = DiWordDetector()
-        result_di = detector.detect_di_usage(paragraph)
-
-        # # Detect Kata Terikat #        
-        # with open('Models/deteksi_terikat/kata-dasar.txt', 'r') as file:
-        #     word_list = [line.strip() for line in file.readlines()]        
-        # preprocess = preprocessing(paragraph)
-
-        # # RabinKarp untuk cari pattern data input
-        # rbnKarp = rabinKarp(preprocess, patterns)
-
-        # # Sort hasil dari index terkecil
-        # sort_data = sorted(rbnKarp, key=lambda x: x[-1])
-
-        # # Remove duplicates
-        # unique_data = {item[2]: item for item in sort_data}.values()
-
-        # # Deteksi bigram
-        # bigrams = generate_bigrams(preprocess)
-        # deteksi_bigram_terikat = []
-
-        # # Cari pattern di bigram
-        # for word, index in bigrams:
-        #     result_terikat = rabinKarp(word, patterns, True, index)
-        #     if result_terikat != []:
-        #         deteksi_bigram_terikat.append(result_terikat)
-
-        # result_terikat_dict = {}
-
-        # result_terikat_dict.update(validateSatuKata(unique_data, word_list))
-
-        # if deteksi_bigram_terikat:
-        #     result_terikat_dict.update(validateDuaKata(deteksi_bigram_terikat, word_list, paragraph))
-            
+        
         # # Detect Majemuk #
         # Baca dataset
         katamajemuk = pd.read_csv('Models/deteksi_majemuk/daftarkatamajemuk.csv')
@@ -243,6 +208,16 @@ def detect_diword():
             i += 1
         return render_template('index.html', result_di=result_di, paragraph_di=paragraph,
                                result_majemuk_final=result_majemuk_final, paragraph_majemuk=paragraph)
+        if deteksi_bigram_terikat:
+            result_terikat_dict.update(validateDuaKata(deteksi_bigram_terikat, word_list, paragraph))
+            
+        if (result_terikat_dict == {}):
+            result_terikat_dict = {'errormessage': "Tidak ada kata terikat yang ditemukan"}
+
+        return render_template('index.html', result_di=result_di, paragraph_di=paragraph, 
+                               result_terikat=result_terikat_dict, paragraph_terikat=paragraph
+                               )
+
 
 @app.route('/about')
 def about():
