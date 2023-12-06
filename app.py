@@ -20,10 +20,10 @@ def index():
     paragraph_di = None
     result_terikat = None 
     paragraph_terikat = None
-    result_majemuk = None
-    paragraph_majemuk = None
+    result_majemuk_final = []
+    paragraph_majemuk = []
     return render_template('index.html', result_di=result_di, paragraph_di=paragraph_di,
-                           result_majemuk=result_majemuk, paragraph_majemuk=paragraph_majemuk)
+                           result_majemuk_final=result_majemuk_final, paragraph_majemuk=paragraph_majemuk)
 
 @app.route('/detect', methods=['POST'])
 def detect_diword():
@@ -200,10 +200,10 @@ def detect_diword():
         # Example usage:
         word_list = majemuk
 
-        result = check_whitespace_in_words(word_list)
+        result_majemuk = check_whitespace_in_words(word_list)
 
         data = []
-        for result in result:
+        for result in result_majemuk:
             data.append([majemuk[result], koreksi[result], kemiripan[result]])
 
         df_singleword = pd.DataFrame(data, columns=['Kata Majemuk', 'Kata Majemuk Koreksi', 'Similarity'])
@@ -227,22 +227,22 @@ def detect_diword():
         kataMajemuk = df['Kata Majemuk'].values.tolist()
         kataKoreksi = df['Kata Majemuk Koreksi'].values.tolist()
 
-        result_majemuk = {}
+        result_majemuk_final = {}
         i = 0
         for kata in kataMajemuk:
             if i < num :
-                result_majemuk[kata] = {
+                result_majemuk_final[kata] = {
                     'is_correct' : True,
                     'suggestion' : ''
                 }
             else :
-                result_majemuk[kata] = {
+                result_majemuk_final[kata] = {
                     'is_correct' : False,
                     'suggestion' : kataKoreksi[i]
                 }
             i += 1
         return render_template('index.html', result_di=result_di, paragraph_di=paragraph,
-                               result_majemuk=result_majemuk, paragraph_majemuk=paragraph)
+                               result_majemuk_final=result_majemuk_final, paragraph_majemuk=paragraph)
 
 @app.route('/about')
 def about():
