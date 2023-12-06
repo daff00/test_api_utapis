@@ -22,7 +22,9 @@ def index():
     paragraph_terikat = None
     result_majemuk_final = []
     paragraph_majemuk = []
-    return render_template('index.html', result_di=result_di, paragraph_di=paragraph_di,
+    return render_template('index.html', 
+                           result_di=result_di, paragraph_di=paragraph_di,
+                           result_terikat=result_terikat, paragraph_terikat=paragraph_terikat,
                            result_majemuk_final=result_majemuk_final, paragraph_majemuk=paragraph_majemuk)
 
 @app.route('/detect', methods=['POST'])
