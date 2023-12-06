@@ -1,48 +1,35 @@
+
 from flask import Flask, render_template, request, jsonify
-from Models.deteksi_di.DiWordDetector import DiWordDetector
-from Models.deteksi_terikat.kataTerikat import patterns, validateSatuKata, validateDuaKata
-from Models.deteksi_terikat.preprocessing import preprocessing
-from Models.deteksi_terikat.rabinKarp import rabinKarp
-from Models.deteksi_terikat.bigram import generate_bigrams
+import re
+import pandas as pd
 from fuzzywuzzy import fuzz
 from nlp_id.postag import PosTag
 from nlp_id.lemmatizer import Lemmatizer
 from nltk.tokenize import sent_tokenize
-import nltk
-import pandas as pd
-nltk.download('punkt')
 
-app = Flask(__name__, template_folder='Templates')
 
-@app.route('/')
+app = Flask(__name__, template_folder='index')
+
+
+@app.route('/', methods=['GET', 'POST'])
+
+
 def index():
-    result_di = None
-    paragraph_di = None
-    result_terikat = {} 
-    paragraph_terikat = None
-    result_majemuk_final = []
-    paragraph_majemuk = []
-    return render_template('index.html', result_di=result_di, paragraph_di=paragraph_di,
-                           result_majemuk_final=result_majemuk_final, paragraph_majemuk=paragraph_majemuk)
 
-@app.route('/detect', methods=['POST'])
-def detect_diword():
     if request.method == 'POST':
-        # # Ambil data paragraf
-        paragraph = request.form.get('paragraph')
-        
-        # # Detect Majemuk #
-        # Baca dataset
-        katamajemuk = pd.read_csv('Models/deteksi_majemuk/daftarkatamajemuk.csv')
+        artikel = request.form['text']
+        kalimat = artikel
+
+        #read dataset
+        katamajemuk = pd.read_csv('daftarkatamajemuk.csv')
         list_katamajemuk = katamajemuk['kata majemuk'].values.tolist()
-        dataset = pd.read_csv('Models/deteksi_majemuk/dataset_kata_benar.csv')
+        dataset = pd.read_csv('dataset_kata_benar.csv')
         dataset = dataset['word'].values.tolist()
-        
-        # Define lemmatizer
+
+        # create lemmatizer
         lemmatizer = Lemmatizer()
-        
+
         #preprocess
-        kalimat = paragraph
         kalimat = kalimat.lower()
         kalimat = ' '.join(kalimat.split())
         kalimat_kalimat = sent_tokenize(kalimat)
@@ -51,6 +38,7 @@ def detect_diword():
 
         for a in range(len(kalimat_kalimat)):
             postTag.append(postagger.get_pos_tag(kalimat_kalimat[a])) 
+
 
         multi_word=[]
         single_word=[]
@@ -134,27 +122,19 @@ def detect_diword():
         
         #Dataframe based on array data
         df = pd.DataFrame(data, columns=['Kata Majemuk', 'Kata Majemuk Koreksi', 'Similarity'])
-        # Check if the 'Kata Majemuk' column exists in the DataFrame
-        if 'Kata Majemuk' in df.columns:
-            # Drop duplicates based on specified subset and keep the first occurrence
-            df = df.drop_duplicates(subset=['Kata Majemuk', 'Kata Majemuk Koreksi'], keep='first').reset_index(drop=True)
+        df = df.drop_duplicates( 
+            subset = ['Kata Majemuk', 'Kata Majemuk Koreksi'], 
+            keep = 'first').reset_index(drop = True)
+        
+        df1 = df[df['Similarity'].apply(lambda x : x == 100)]
+        df2 = df[df['Similarity'].apply(lambda x : x < 100)]
 
-            # Separate data into two DataFrames based on the 'Similarity' column
-            df1 = df[df['Similarity'].eq(100)].drop_duplicates()
-            df2 = df[df['Similarity'].lt(100)].drop_duplicates()
+        df1 = df1.drop_duplicates()
+        df2 = df2[~df2['Kata Majemuk'].isin(df1['Kata Majemuk'])]
 
-            # Exclude rows in df2 that are also present in df1 based on 'Kata Majemuk'
-            df2 = df2[~df2['Kata Majemuk'].isin(df1['Kata Majemuk'])]
-
-            # Extract lists from the resulting DataFrames
-            majemuk = df2['Kata Majemuk'].values.tolist()
-            koreksi = df2['Kata Majemuk Koreksi'].values.tolist()
-            kemiripan = df2['Similarity'].values.tolist()
-        else:
-            # Handle the case when 'Kata Majemuk' column is not present
-            majemuk = []
-            koreksi = []
-            kemiripan = []
+        majemuk = df2['Kata Majemuk'].values.tolist()
+        koreksi = df2['Kata Majemuk Koreksi'].values.tolist()
+        kemiripan = df2['Similarity'].values.tolist()
 
 
         def check_whitespace_in_words(word_list):
@@ -165,10 +145,10 @@ def detect_diword():
         # Example usage:
         word_list = majemuk
 
-        result_majemuk = check_whitespace_in_words(word_list)
+        result = check_whitespace_in_words(word_list)
 
         data = []
-        for result in result_majemuk:
+        for result in result:
             data.append([majemuk[result], koreksi[result], kemiripan[result]])
 
         df_singleword = pd.DataFrame(data, columns=['Kata Majemuk', 'Kata Majemuk Koreksi', 'Similarity'])
@@ -192,40 +172,24 @@ def detect_diword():
         kataMajemuk = df['Kata Majemuk'].values.tolist()
         kataKoreksi = df['Kata Majemuk Koreksi'].values.tolist()
 
-        result_majemuk_final = {}
+        result = {}
         i = 0
         for kata in kataMajemuk:
             if i < num :
-                result_majemuk_final[kata] = {
+                result[kata] = {
                     'is_correct' : True,
                     'suggestion' : ''
                 }
             else :
-                result_majemuk_final[kata] = {
+                result[kata] = {
                     'is_correct' : False,
                     'suggestion' : kataKoreksi[i]
                 }
             i += 1
-        return render_template('index.html', result_di=result_di, paragraph_di=paragraph,
-                               result_majemuk_final=result_majemuk_final, paragraph_majemuk=paragraph)
-        if deteksi_bigram_terikat:
-            result_terikat_dict.update(validateDuaKata(deteksi_bigram_terikat, word_list, paragraph))
-            
-        if (result_terikat_dict == {}):
-            result_terikat_dict = {'errormessage': "Tidak ada kata terikat yang ditemukan"}
-
-        return render_template('index.html', result_di=result_di, paragraph_di=paragraph, 
-                               result_terikat=result_terikat_dict, paragraph_terikat=paragraph
-                               )
-
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/team')
-def team():
-    return render_template('team.html')
+        return jsonify(result)
+        #return render_template('result.html',  artikel=artikel, result=result)
+    return render_template('home.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
+   
