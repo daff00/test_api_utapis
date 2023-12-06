@@ -200,11 +200,10 @@
             if (!jsonData[word].is_correct) {
               var regex = new RegExp('\\b' + word + '\\b', 'gi');
               var replacement = jsonData[word].suggestion;
-              content = content.replace(regex, '<span class="text-success fw-bold">' + suggestion + '</span>');
-            } else if (jsonData[word].is_correct) {
+              content = content.replace(regex, '<span class="text-success fw-bold">' + replacement + '</span>');
+            } else {
               var regex = new RegExp('\\b' + word + '\\b', 'gi');
-              var replacement = jsonData[word].suggestion;
-              content = content.replace(regex, '<span class="text-success fw-bold">' + suggestion + '</span>');
+              content = content.replace(regex, '<span class="text-success fw-bold">' + word + '</span>');
             }
           }
       
