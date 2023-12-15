@@ -1,3 +1,131 @@
 .custom-bg-dark {
-    background-color: #213555;
+  background-color: #213555;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .item {
+    flex-direction: column;
+  }
+
+  .ms-auto {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .img-fluid {
+    width: 100%;
+    max-width: none;
+    height: auto;
+  }
+
+  .lead {
+    margin-left: 0;
+  }
+
+  .flex_wrap {
+    flex-wrap: wrap;
+  }
+
+  .d-flex {
+    flex-direction: column;
+  }
+
+  .item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .para-container {
+    text-align: left;
+    word-wrap: break-word; /* Align text to the left for better readability on small screens */
+  }
+
+  .img-fluid {
+    width: 100%;
+    max-width: 25%;
+    height: auto;
+  }
+  .logo-about {
+    width: 100%;
+    max-width: 50%;
+    height: auto;
+  }
+
+  .lead {
+    margin-left: 0;
+  }
+  .image {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: row; /* Set the flex direction to row */
+  }
+  .vid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .img-dok {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .news-img {
+    width: 100%;
+    max-width: 50%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .vid iframe {
+        width: 100%;
+  }
+  .img-dok img {
+    width: 100%;
+    height: auto;
+  }
+  .page-section-heading {
+    font-size: 24px;
+  }
+
+  .lead {
+    font-size: 14px;
+  }
+
+  .m-4 {
+    margin: 10px 0;
+  }
+
+  .flex-grow-1 {
+    margin-top: 10px;
+  }
+
+  .lead {
+    font-size: 14px;
+  }
+}
+
+.img-dok {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.img-dok img {
+  margin: 10px; /* Adjust margin as needed */
+}
+
+.para-container {
+  text-align: justify;
+  margin-left: 2%;
 }
