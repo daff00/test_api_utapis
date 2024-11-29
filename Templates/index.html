@@ -68,7 +68,9 @@
                         <div class="card-body">
                             <h5 class="card-title text-center mb-3">Paragraf Salah</h5>
                             <div class="highlight-text mx-4 mt-4 mb-4">
-                                {{majemuk}}
+                                {% if majemuk %}
+                                  {{ majemuk }}
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -76,7 +78,9 @@
                         <div class="card-body">
                             <h5 class="card-title text-center mb-3">Hasil Tapis</h5>
                             <div id="content" class="mx-4 mb-4 mt-4">
-                                {{majemuk}}
+                                {% if majemuk %}
+                                  {{ majemuk }}
+                                {% endif %}
                             </div>
                         </div>
                     </div>
